@@ -206,7 +206,7 @@ export default function Careers() {
               </span>
             </h2>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-              Explore exciting career opportunities with HB Global Consultancy
+              Explore exciting career opportunities with HB Global Service Provider
             </p>
           </div>
           

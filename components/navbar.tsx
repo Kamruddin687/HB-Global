@@ -27,14 +27,36 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/hb-logo.png"
-                alt="HB Global Consultancy Logo"
-                width={48}
-                height={48}
-                className="h-12 w-auto"
-              />
+            <Link href="/" className="group flex items-center gap-3 relative">
+              {/* Logo Container with Glow Effect */}
+              <div className="relative">
+                {/* Animated Glow Ring */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-primary via-accent to-primary rounded-full opacity-0 group-hover:opacity-75 blur-lg transition-all duration-500 animate-spin-slow"></div>
+                
+                {/* Logo Image */}
+                <div className="relative bg-gradient-to-br from-primary/10 to-accent/10 rounded-full p-1 group-hover:scale-110 transition-transform duration-500">
+                  <Image
+                    src="/hb-logo.png"
+                    alt="HB Global Service Provider Logo"
+                    width={48}
+                    height={48}
+                    className="h-12 w-12 rounded-full object-cover relative z-10 group-hover:rotate-12 transition-transform duration-500"
+                  />
+                </div>
+                
+                {/* Pulsing Ring */}
+                <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping opacity-0 group-hover:opacity-100"></div>
+              </div>
+              
+              {/* Company Name */}
+              <div className="hidden lg:block">
+                <div className="font-bold text-xl bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent group-hover:animate-gradient-x transition-all duration-300">
+                  HB Global
+                </div>
+                <div className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-300 font-medium">
+                  Service Provider
+                </div>
+              </div>
             </Link>
           </div>
 

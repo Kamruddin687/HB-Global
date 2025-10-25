@@ -65,10 +65,9 @@ export default function Hero() {
               <h1 className={`text-5xl md:text-7xl font-extrabold text-foreground leading-tight ${
                 isVisible ? 'animate-fade-in-up delay-200' : 'opacity-0'
               }`}>
-                Find Your Perfect{" "}
                 <span className="relative inline-block">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-gradient-x">
-                    Talent Match
+                    HB Global Service Provider
                   </span>
                   <span className="absolute -bottom-2 left-0 w-full h-3 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-lg"></span>
                 </span>
@@ -78,7 +77,7 @@ export default function Hero() {
               <p className={`text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl ${
                 isVisible ? 'animate-fade-in-up delay-400' : 'opacity-0'
               }`}>
-                HB Global Consultancy is your trusted recruitment partner, connecting exceptional 
+                HB Global Service Provider is your trusted recruitment partner, connecting exceptional 
                 talent with top organizations. We specialize in{" "}
                 <span className="text-primary font-semibold">executive search</span>,{" "}
                 <span className="text-accent font-semibold">talent acquisition</span>, 
@@ -166,7 +165,10 @@ export default function Hero() {
             </div>
             
             {/* Enhanced Floating Cards */}
-            <div className="absolute -top-6 -left-6 glass-effect p-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 animate-float">
+            <div 
+              onClick={() => setIsFormOpen(true)}
+              className="absolute -top-6 -left-6 glass-effect p-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 animate-float cursor-pointer"
+            >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-gradient-to-br from-primary to-primary/70 rounded-xl">
                   <Users className="w-7 h-7 text-white" />
@@ -178,7 +180,11 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="absolute -bottom-6 -right-6 glass-effect p-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 animate-float" style={{animationDelay: '1s'}}>
+            <div 
+              onClick={() => setIsFormOpen(true)}
+              className="absolute -bottom-6 -right-6 glass-effect p-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 animate-float cursor-pointer" 
+              style={{animationDelay: '1s'}}
+            >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-gradient-to-br from-accent to-accent/70 rounded-xl">
                   <Target className="w-7 h-7 text-white" />

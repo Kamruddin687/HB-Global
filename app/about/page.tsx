@@ -37,7 +37,7 @@ export default function About() {
             </h1>
             
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto animate-fade-in-up delay-400">
-              For over 15 years, HB Global Consultancy has been connecting exceptional talent 
+              For over 15 years, HB Global Service Provider has been connecting exceptional talent 
               with leading organizations across the globe. We specialize in executive recruitment, 
               talent management, and strategic workforce solutions.
             </p>
@@ -61,7 +61,7 @@ export default function About() {
               </h2>
               <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
                 <p>
-                  Founded in 2009, HB Global Consultancy began as a small recruitment firm with a 
+                  Founded in 2009, HB Global Service Provider began as a small recruitment firm with a 
                   vision to transform how organizations find and retain top talent. What started as 
                   a local consultancy has grown into a global powerhouse, serving clients across 
                   15+ countries.

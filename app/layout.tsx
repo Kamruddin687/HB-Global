@@ -8,9 +8,9 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "HB Global Consultancy - Executive Recruitment & Consulting",
+  title: "HB Global Service Provider - Executive Recruitment & Consulting",
   description:
-    "Transform your talent strategy with HB Global Consultancy. Executive recruitment, talent management, and strategic consulting services.",
+    "Transform your talent strategy with HB Global Service Provider. Executive recruitment, talent management, and strategic consulting services.",
   generator: "v0.app",
 }
 

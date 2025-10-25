@@ -69,7 +69,7 @@ export default function Careers({ onApplyClick }: CareersProps) {
           </h2>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Build your career with HB Global Consultancy and make an impact
+            Build your career with HB Global Service Provider and make an impact
           </p>
         </div>
 

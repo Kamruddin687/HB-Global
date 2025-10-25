@@ -38,7 +38,7 @@ export default function CTA({ onApplyClick }: CTAProps) {
                 </span>
               </h2>
               <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto animate-fade-in-up delay-400">
-                Let's discuss how HB Global Consultancy can help your organization achieve its goals. 
+                Let's discuss how HB Global Service Provider can help your organization achieve its goals. 
                 Get in touch with our experts for a personalized consultation.
               </p>
               
