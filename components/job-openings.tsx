@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { MapPin, Clock, DollarSign, ArrowRight, Filter, Search } from "lucide-react"
+
+interface JobOpeningsProps {
+  onApplyClick?: () => void
+}
 
 const jobOpenings = [
   {
@@ -81,7 +86,7 @@ const jobOpenings = [
 const jobTypes = ["All", "Full-time", "Contract", "Part-time"]
 const locations = ["All", "Bangalore", "Mumbai", "Hyderabad", "Delhi", "Pune", "Chennai"]
 
-export default function JobOpenings() {
+export default function JobOpenings({ onApplyClick }: JobOpeningsProps) {
   const [selectedType, setSelectedType] = useState("All")
   const [selectedLocation, setSelectedLocation] = useState("All")
   const [searchTerm, setSearchTerm] = useState("")
@@ -101,46 +106,50 @@ export default function JobOpenings() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
-            <Search className="w-4 h-4" />
-            Latest Opportunities
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 glass-effect text-primary rounded-full text-sm font-semibold mb-6 animate-fade-in-up">
+            <Search className="w-4 h-4 animate-pulse" />
+            <span>Latest Opportunities</span>
           </div>
           
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-foreground mb-6">
             Find Your{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-              Dream Job
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-gradient-x">
+                Dream Job
+              </span>
+              <span className="absolute -bottom-2 left-0 w-full h-3 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-lg"></span>
             </span>
           </h2>
           
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-12">
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12">
             Discover exciting career opportunities with top companies. We connect talented professionals 
             with leading organizations across various industries.
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-card border border-border rounded-2xl p-8 mb-12">
+        <div className="glass-effect rounded-3xl p-8 mb-12 shadow-lg">
           <div className="grid md:grid-cols-3 gap-6">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <label className="block text-sm font-semibold text-foreground mb-2">Search</label>
+              <Search className="absolute left-4 bottom-4 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search jobs, companies, or skills..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               />
             </div>
 
             {/* Job Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Job Type</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">Job Type</label>
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-3 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               >
                 {jobTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
@@ -150,11 +159,11 @@ export default function JobOpenings() {
 
             {/* Location Filter */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Location</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">Location</label>
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-3 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               >
                 {locations.map(location => (
                   <option key={location} value={location}>{location}</option>
@@ -162,66 +171,96 @@ export default function JobOpenings() {
               </select>
             </div>
           </div>
+          
+          {/* Results Count */}
+          <div className="mt-6 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Showing <span className="font-bold text-primary">{filteredJobs.length}</span> jobs
+            </p>
+            <button className="text-sm font-semibold text-primary hover:text-accent transition-colors flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              Advanced Filters
+            </button>
+          </div>
         </div>
 
         {/* Job Listings */}
         <div className="grid gap-6">
           {filteredJobs.map((job) => (
-            <div key={job.id} className="group bg-card border border-border rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                        {job.title}
-                      </h3>
-                      <p className="text-lg text-muted-foreground">{job.company}</p>
+            <div key={job.id} className="group relative glass-effect rounded-3xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+              {/* Background Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 rounded-3xl transition-opacity duration-500"></div>
+              
+              {/* Shine Effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              </div>
+              
+              <div className="relative z-10">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                          {job.title}
+                        </h3>
+                        <p className="text-lg text-muted-foreground font-medium">{job.company}</p>
+                      </div>
+                      {job.urgent && (
+                        <span className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-bold rounded-full shadow-lg animate-pulse">
+                          URGENT
+                        </span>
+                      )}
                     </div>
-                    {job.urgent && (
-                      <span className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full">
-                        Urgent
+
+                    <div className="flex flex-wrap items-center gap-4 mb-4">
+                      <div className="flex items-center gap-2 px-3 py-2 glass-effect rounded-lg">
+                        <MapPin className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">{job.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-2 glass-effect rounded-lg">
+                        <Clock className="w-4 h-4 text-accent" />
+                        <span className="text-sm font-medium text-foreground">{job.type}</span>
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-2 glass-effect rounded-lg">
+                        <DollarSign className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">{job.salary}</span>
+                      </div>
+                      <div className="px-3 py-2 glass-effect rounded-lg">
+                        <span className="text-sm font-medium text-foreground">{job.experience}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {job.skills.map((skill, index) => (
+                        <span key={index} className="px-3 py-1 bg-gradient-to-r from-primary/10 to-accent/10 text-primary text-sm rounded-full font-medium">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">Posted {job.posted}</p>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <button 
+                      onClick={onApplyClick}
+                      className="group/btn relative px-8 py-4 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105"
+                    >
+                      <span className="absolute inset-0 bg-gradient-to-r from-accent to-primary opacity-0 group-hover/btn:opacity-100 transition-opacity"></span>
+                      <span className="relative flex items-center gap-2">
+                        Apply Now
+                        <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
                       </span>
-                    )}
+                    </button>
+                    <button className="px-8 py-4 border-2 border-primary text-primary rounded-2xl font-semibold hover:bg-primary/5 transition-all duration-300 hover:scale-105">
+                      Save Job
+                    </button>
                   </div>
-
-                  <div className="flex flex-wrap items-center gap-6 mb-4">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="w-4 h-4" />
-                      <span>{job.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Clock className="w-4 h-4" />
-                      <span>{job.type}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <DollarSign className="w-4 h-4" />
-                      <span>{job.salary}</span>
-                    </div>
-                    <div className="text-muted-foreground">
-                      {job.experience} experience
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {job.skills.map((skill, index) => (
-                      <span key={index} className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-
-                  <p className="text-sm text-muted-foreground">Posted {job.posted}</p>
                 </div>
-
-                <div className="flex flex-col gap-3">
-                  <button className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2 group-hover:gap-3">
-                    Apply Now
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                  <button className="px-6 py-3 border border-primary text-primary rounded-lg font-semibold hover:bg-primary/5 transition-colors">
-                    Save Job
-                  </button>
-                </div>
+                
+                {/* Decorative Line */}
+                <div className="mt-6 w-0 h-1 bg-gradient-to-r from-primary to-accent group-hover:w-full transition-all duration-500 rounded-full"></div>
               </div>
             </div>
           ))}
@@ -229,9 +268,12 @@ export default function JobOpenings() {
 
         {/* View All Jobs */}
         <div className="text-center mt-12">
-          <button className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl">
-            View All Job Openings
-          </button>
+          <Link href="/jobs">
+            <button className="group px-10 py-5 bg-gradient-to-r from-primary to-accent text-white rounded-2xl font-bold text-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-3 mx-auto">
+              View All Job Openings
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </button>
+          </Link>
         </div>
       </div>
     </section>

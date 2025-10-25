@@ -3,9 +3,22 @@
 import { useState } from "react"
 import { ArrowRight, Calendar, MessageCircle } from "lucide-react"
 import ContactForm from "./contact-form"
+import ConsultationBooking from "./consultation-booking"
 
-export default function CTA() {
+interface CTAProps {
+  onApplyClick?: () => void
+}
+
+export default function CTA({ onApplyClick }: CTAProps) {
   const [showForm, setShowForm] = useState(false)
+  const [showConsultation, setShowConsultation] = useState(false)
+
+  const handleConsultationClick = () => {
+    console.log("Schedule Consultation clicked!")
+    console.log("Current showConsultation state:", showConsultation)
+    setShowConsultation(true)
+    console.log("Setting showConsultation to true")
+  }
 
   return (
     <section id="contact" className="py-20 md:py-32 bg-gradient-to-br from-primary/5 via-background to-accent/5 relative overflow-hidden">
@@ -38,7 +51,10 @@ export default function CTA() {
                   Get In Touch
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="group px-8 py-4 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary/5 hover:border-accent hover:text-accent transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleConsultationClick}
+                  className="group px-8 py-4 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary/5 hover:border-accent hover:text-accent transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2"
+                >
                   <Calendar className="w-5 h-5 group-hover:animate-spin" />
                   <span className="group-hover:animate-pulse">Schedule a Consultation</span>
                 </button>
@@ -92,6 +108,9 @@ export default function CTA() {
           </div>
         )}
       </div>
+      
+      {/* Consultation Booking Modal */}
+      <ConsultationBooking isOpen={showConsultation} onClose={() => setShowConsultation(false)} />
     </section>
   )
 }
