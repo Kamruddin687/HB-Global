@@ -1,7 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Mail, Phone, MapPin, Send, CheckCircle, User, Building2, Briefcase, MessageSquare, Sparkles } from "lucide-react"
+import { useState } from "react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  CheckCircle,
+  User,
+  Building2,
+  Briefcase,
+  MessageSquare,
+  Sparkles,
+} from "lucide-react";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -10,56 +21,81 @@ export default function ContactForm() {
     phone: "",
     company: "",
     service: "",
-    message: ""
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const services = [
     "Executive Recruitment",
-    "Talent Management", 
+    "Talent Management",
     "Strategic Consulting",
     "Career Development",
-    "Other"
-  ]
+    "Other",
+  ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setIsSubmitting(false)
-    setIsSubmitted(true)
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        service: "",
-        message: ""
-      })
-    }, 3000)
-  }
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const URL =
+      "https://script.google.com/macros/s/AKfycbzCKXWH1qNo7vmxYc9QUK2TAqN9w1-HTovPMhI6Y8vEuoy1U2uA6DdYT-397tIOcqF48w/exec";
+
+    const payload = {
+      ...formData,
+      secret: "yourSuperSecretKey123", // must match Apps Script
+      honeypot: "", // bot trap
+    };
+
+    try {
+      // CORS-safe fetch (cannot read response)
+      await fetch(URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      // Show success state
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          company: "",
+          service: "",
+          message: "",
+        });
+      }, 3000);
+    } catch (err) {
+      setIsSubmitting(false);
+      alert("Failed to send message. Please try again.");
+      console.error("Submission Error:", err);
+    }
+  };
 
   if (isSubmitted) {
     return (
       <div className="relative glass-effect rounded-3xl p-12 text-center overflow-hidden">
         {/* Background Animation */}
         <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-emerald-500/5 to-green-500/5 animate-gradient-x"></div>
-        
+
         <div className="relative z-10">
           <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-scale-up shadow-2xl">
             <CheckCircle className="w-12 h-12 text-white" />
@@ -68,7 +104,8 @@ export default function ContactForm() {
             Thank You!
           </h3>
           <p className="text-xl text-muted-foreground mb-2">
-            We've received your message and will get back to you within 24 hours.
+            We've received your message and will get back to you within 24
+            hours.
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-600 rounded-full text-sm font-medium mt-4">
             <CheckCircle className="w-4 h-4" />
@@ -76,18 +113,18 @@ export default function ContactForm() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="relative glass-effect rounded-3xl p-8 md:p-12 overflow-hidden">
       {/* Background Animation */}
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 animate-gradient-x"></div>
-      
+
       {/* Decorative Elements */}
       <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/20 to-transparent rounded-bl-full"></div>
       <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-accent/20 to-transparent rounded-tr-full"></div>
-      
+
       <div className="relative z-10">
         <div className="mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
@@ -104,14 +141,18 @@ export default function ContactForm() {
             </span>
           </h3>
           <p className="text-lg text-muted-foreground">
-            Ready to transform your talent strategy? Let's discuss how we can help your organization achieve its goals.
+            Ready to transform your talent strategy? Let's discuss how we can
+            help your organization achieve its goals.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="group">
-              <label htmlFor="name" className="block text-sm font-semibold text-foreground mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-semibold text-foreground mb-2"
+              >
                 Full Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -128,9 +169,12 @@ export default function ContactForm() {
                 />
               </div>
             </div>
-            
+
             <div className="group">
-              <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-foreground mb-2"
+              >
                 Email Address <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -151,7 +195,10 @@ export default function ContactForm() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="group">
-              <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-semibold text-foreground mb-2"
+              >
                 Phone Number
               </label>
               <div className="relative">
@@ -167,9 +214,12 @@ export default function ContactForm() {
                 />
               </div>
             </div>
-            
+
             <div className="group">
-              <label htmlFor="company" className="block text-sm font-semibold text-foreground mb-2">
+              <label
+                htmlFor="company"
+                className="block text-sm font-semibold text-foreground mb-2"
+              >
                 Company
               </label>
               <div className="relative">
@@ -188,7 +238,10 @@ export default function ContactForm() {
           </div>
 
           <div className="group">
-            <label htmlFor="service" className="block text-sm font-semibold text-foreground mb-2">
+            <label
+              htmlFor="service"
+              className="block text-sm font-semibold text-foreground mb-2"
+            >
               Service Interested In
             </label>
             <div className="relative">
@@ -211,7 +264,10 @@ export default function ContactForm() {
           </div>
 
           <div className="group">
-            <label htmlFor="message" className="block text-sm font-semibold text-foreground mb-2">
+            <label
+              htmlFor="message"
+              className="block text-sm font-semibold text-foreground mb-2"
+            >
               Message <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -259,33 +315,45 @@ export default function ContactForm() {
                 <Mail className="w-5 h-5 text-white" />
               </div>
               <div>
-                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Email</div>
-                <div className="text-sm text-muted-foreground">hbglobalserviceprovider.pvt.ltd@gmail.com</div>
+                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  Email
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  hbglobalserviceprovider.pvt.ltd@gmail.com
+                </div>
               </div>
             </div>
-            
+
             <div className="group flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
               <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-xl group-hover:scale-110 transition-transform shadow-lg">
                 <Phone className="w-5 h-5 text-white" />
               </div>
               <div>
-                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Phone</div>
-                <div className="text-sm text-muted-foreground">+91-9356779714</div>
+                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  Phone
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  +91-9356779714
+                </div>
               </div>
             </div>
-            
+
             <div className="group flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
               <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-xl group-hover:scale-110 transition-transform shadow-lg">
                 <MapPin className="w-5 h-5 text-white" />
               </div>
               <div>
-                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Location</div>
-                <div className="text-sm text-muted-foreground">New York, NY</div>
+                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  Location
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  New York, NY
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

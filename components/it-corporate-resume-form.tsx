@@ -1,14 +1,32 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { X, Send, User, Mail, Phone, Briefcase, Upload, CheckCircle, Sparkles, FileText, MapPin, GraduationCap, Award, Code2 } from "lucide-react"
+import { useState, useRef } from "react";
+import {
+  X,
+  Send,
+  User,
+  Mail,
+  Phone,
+  Briefcase,
+  Upload,
+  CheckCircle,
+  Sparkles,
+  FileText,
+  MapPin,
+  GraduationCap,
+  Award,
+  Code2,
+} from "lucide-react";
 
 interface ITCorporateResumeFormProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateResumeFormProps) {
+export default function ITCorporateResumeForm({
+  isOpen,
+  onClose,
+}: ITCorporateResumeFormProps) {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -24,106 +42,162 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
     expectedSalary: "",
     portfolioUrl: "",
     linkedinUrl: "",
-    additionalInfo: ""
-  })
-  const [resume, setResume] = useState<File | null>(null)
-  const [certificates, setCertificates] = useState<File[]>([])
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const resumeInputRef = useRef<HTMLInputElement>(null)
-  const certificatesInputRef = useRef<HTMLInputElement>(null)
+    additionalInfo: "",
+  });
+  const [resume, setResume] = useState<File | null>(null);
+  const [certificates, setCertificates] = useState<File[]>([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const resumeInputRef = useRef<HTMLInputElement>(null);
+  const certificatesInputRef = useRef<HTMLInputElement>(null);
+  const SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbzwQqKlU4Hoz5NbSsTIUkXh6KeM8TBGeFQ8EIX_o2XI00rSeWTTZWpqdLH_lV-ccT3hEg/exec";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    const submissionData = {
-      ...formData,
-      resume: resume?.name,
-      certificates: certificates.map(cert => cert.name),
-      submittedAt: new Date().toISOString(),
-      industry: "IT & Corporate"
-    }
-    
-    console.log("IT & Corporate Resume submitted:", submissionData)
-    console.log("Resume file:", resume)
-    console.log("Certificate files:", certificates)
-    
-    setIsSubmitted(true)
-    
-    setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        currentRole: "",
-        technicalSkills: "",
-        experience: "",
-        location: "",
-        qualification: "",
-        certifications: "",
-        preferredRole: "",
-        availability: "",
-        expectedSalary: "",
-        portfolioUrl: "",
-        linkedinUrl: "",
-        additionalInfo: ""
-      })
-      setResume(null)
-      setCertificates([])
-      onClose()
-    }, 3000)
+  async function uploadFiles(resume: File, certificates: File[]) {
+    const formData = new FormData();
+    formData.append("resume", resume);
+
+    certificates.forEach((file) => {
+      formData.append("certificates", file);
+    });
+
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors", // ✅ REQUIRED
+      body: formData,
+    });
+
+    // We CANNOT read response in no-cors
+    return true;
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!resume) {
+      alert("Resume is required");
+      return;
+    }
+
+    try {
+      // 1️⃣ Upload files first
+      const fileResult = await uploadFiles(resume, certificates);
+
+      // 2️⃣ Prepare payload for Google Sheet
+      const payload = {
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        company: "",
+        service: "IT & Corporate",
+        message: formData.additionalInfo,
+        resumeUploaded: true,
+        certificatesCount: certificates.length,
+        secret: "yourSuperSecretKey123",
+        honeypot: "",
+      };
+
+      // 3️⃣ Send JSON to Sheet
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      setIsSubmitted(true);
+
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          currentRole: "",
+          technicalSkills: "",
+          experience: "",
+          location: "",
+          qualification: "",
+          certifications: "",
+          preferredRole: "",
+          availability: "",
+          expectedSalary: "",
+          portfolioUrl: "",
+          linkedinUrl: "",
+          additionalInfo: "",
+        });
+        setResume(null);
+        setCertificates([]);
+        onClose();
+      }, 3000);
+    } catch (err) {
+      console.error(err);
+      alert("Submission failed. Please try again.");
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      const validTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
       if (validTypes.includes(file.type)) {
-        setResume(file)
+        setResume(file);
       } else {
-        alert('Please upload a PDF or DOC file')
-        e.target.value = ''
+        alert("Please upload a PDF or DOC file");
+        e.target.value = "";
       }
     }
-  }
+  };
 
   const handleCertificatesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
+    const files = e.target.files;
     if (files) {
-      const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg']
-      const validFiles: File[] = []
-      
-      Array.from(files).forEach(file => {
+      const validTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+      ];
+      const validFiles: File[] = [];
+
+      Array.from(files).forEach((file) => {
         if (validTypes.includes(file.type)) {
-          validFiles.push(file)
+          validFiles.push(file);
         }
-      })
-      
+      });
+
       if (validFiles.length > 0) {
-        setCertificates(prev => [...prev, ...validFiles])
+        setCertificates((prev) => [...prev, ...validFiles]);
       } else {
-        alert('Please upload PDF or image files for certificates')
+        alert("Please upload PDF or image files for certificates");
       }
     }
-  }
+  };
 
   const removeCertificate = (index: number) => {
-    setCertificates(prev => prev.filter((_, i) => i !== index))
-  }
+    setCertificates((prev) => prev.filter((_, i) => i !== index));
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in-up">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       ></div>
@@ -142,7 +216,9 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   IT & Corporate Application
                 </h2>
               </div>
-              <p className="text-muted-foreground">Join innovative tech and corporate teams</p>
+              <p className="text-muted-foreground">
+                Join innovative tech and corporate teams
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -164,10 +240,13 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   <User className="w-5 h-5 text-primary" />
                   Personal Information
                 </h3>
-                
+
                 {/* Full Name */}
                 <div>
-                  <label htmlFor="fullName" className="block text-sm font-semibold text-foreground mb-2">
+                  <label
+                    htmlFor="fullName"
+                    className="block text-sm font-semibold text-foreground mb-2"
+                  >
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -188,7 +267,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                 {/* Email & Phone */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       Email Address <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -207,7 +289,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       Phone Number <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -228,7 +313,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
 
                 {/* Location */}
                 <div>
-                  <label htmlFor="location" className="block text-sm font-semibold text-foreground mb-2">
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-semibold text-foreground mb-2"
+                  >
                     Current Location <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -257,7 +345,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                 {/* Current Role & Experience */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="currentRole" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="currentRole"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       Current Role <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -269,7 +360,9 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                       className="w-full px-4 py-3 bg-muted/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                     >
                       <option value="">Select Role</option>
-                      <option value="software-engineer">Software Engineer</option>
+                      <option value="software-engineer">
+                        Software Engineer
+                      </option>
                       <option value="web-developer">Web Developer</option>
                       <option value="mobile-developer">Mobile Developer</option>
                       <option value="data-scientist">Data Scientist</option>
@@ -286,8 +379,12 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   </div>
 
                   <div>
-                    <label htmlFor="experience" className="block text-sm font-semibold text-foreground mb-2">
-                      Years of Experience <span className="text-red-500">*</span>
+                    <label
+                      htmlFor="experience"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
+                      Years of Experience{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <select
                       id="experience"
@@ -309,7 +406,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
 
                 {/* Technical Skills */}
                 <div>
-                  <label htmlFor="technicalSkills" className="block text-sm font-semibold text-foreground mb-2">
+                  <label
+                    htmlFor="technicalSkills"
+                    className="block text-sm font-semibold text-foreground mb-2"
+                  >
                     Technical Skills <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -327,8 +427,12 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                 {/* Qualification & Certifications */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="qualification" className="block text-sm font-semibold text-foreground mb-2">
-                      Highest Qualification <span className="text-red-500">*</span>
+                    <label
+                      htmlFor="qualification"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
+                      Highest Qualification{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <GraduationCap className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -346,7 +450,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   </div>
 
                   <div>
-                    <label htmlFor="certifications" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="certifications"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       Certifications (if any)
                     </label>
                     <div className="relative">
@@ -367,7 +474,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                 {/* LinkedIn & Portfolio */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="linkedinUrl" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="linkedinUrl"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       LinkedIn Profile
                     </label>
                     <input
@@ -382,7 +492,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   </div>
 
                   <div>
-                    <label htmlFor="portfolioUrl" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="portfolioUrl"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       Portfolio/GitHub URL
                     </label>
                     <input
@@ -408,7 +521,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                 {/* Preferred Role & Availability */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="preferredRole" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="preferredRole"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       Preferred Role Type
                     </label>
                     <select
@@ -429,7 +545,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   </div>
 
                   <div>
-                    <label htmlFor="availability" className="block text-sm font-semibold text-foreground mb-2">
+                    <label
+                      htmlFor="availability"
+                      className="block text-sm font-semibold text-foreground mb-2"
+                    >
                       Availability
                     </label>
                     <select
@@ -450,7 +569,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
 
                 {/* Expected Salary */}
                 <div>
-                  <label htmlFor="expectedSalary" className="block text-sm font-semibold text-foreground mb-2">
+                  <label
+                    htmlFor="expectedSalary"
+                    className="block text-sm font-semibold text-foreground mb-2"
+                  >
                     Expected Salary Range (Annual)
                   </label>
                   <input
@@ -506,7 +628,9 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                         </div>
                       ) : (
                         <div className="text-center">
-                          <p className="font-semibold text-foreground">Click to upload resume</p>
+                          <p className="font-semibold text-foreground">
+                            Click to upload resume
+                          </p>
                           <p className="text-sm text-muted-foreground mt-1">
                             PDF, DOC, or DOCX (Max 5MB)
                           </p>
@@ -539,7 +663,9 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                         <Award className="w-8 h-8 text-cyan-500" />
                       </div>
                       <div className="text-center">
-                        <p className="font-semibold text-foreground">Click to upload certificates</p>
+                        <p className="font-semibold text-foreground">
+                          Click to upload certificates
+                        </p>
                         <p className="text-sm text-muted-foreground mt-1">
                           PDF, JPG, PNG (Multiple files allowed)
                         </p>
@@ -551,11 +677,16 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                   {certificates.length > 0 && (
                     <div className="mt-4 space-y-2">
                       {certificates.map((cert, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                        >
                           <div className="flex items-center gap-3">
                             <FileText className="w-5 h-5 text-cyan-500" />
                             <div>
-                              <p className="text-sm font-medium text-foreground">{cert.name}</p>
+                              <p className="text-sm font-medium text-foreground">
+                                {cert.name}
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {(cert.size / 1024 / 1024).toFixed(2)} MB
                               </p>
@@ -577,7 +708,10 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
 
               {/* Additional Information */}
               <div>
-                <label htmlFor="additionalInfo" className="block text-sm font-semibold text-foreground mb-2">
+                <label
+                  htmlFor="additionalInfo"
+                  className="block text-sm font-semibold text-foreground mb-2"
+                >
                   Additional Information / Cover Letter
                 </label>
                 <textarea
@@ -624,12 +758,13 @@ export default function ITCorporateResumeForm({ isOpen, onClose }: ITCorporateRe
                 Thank you for applying to IT & Corporate positions.
               </p>
               <p className="text-muted-foreground">
-                Our recruitment team will review your application and contact you soon.
+                Our recruitment team will review your application and contact
+                you soon.
               </p>
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
